@@ -33,6 +33,7 @@ $(document).ready(function() {
       var $container = $($this.data('tmpl-container') + ':visible');  // from container option
     } else {
       var $container = $($this.parents('.tmpl-container')[0]);        // if link is within container
+      // TODO make it just start with tmpl-container
     }
     if ($container.length === 0) throw new TmplContainerNotDefinedError();
 
