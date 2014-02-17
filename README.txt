@@ -1,6 +1,7 @@
 = tmpl
 
-* http://github.com/nearapogee/tmpl (url)
+* https://github.com/nearapogee/tmpl (url)
+* https://github.com/nearapogee/tmpl-example-app
 
 == DESCRIPTION:
 
@@ -17,27 +18,82 @@ An agnostic approach to handle dynamic forms in rails.
 
 == SYNOPSIS:
 
-  .tmpl-container
-    - tmpl_build :collar do
-      = f.fields_for :collars do |collar_fields|
-        .tmpl
-          = collar_fields.text_field :color
-          = tmpl_remove_link 'Remove Collar'
-          = collar_fields.hidden_field :_destroy
+(abbreviated deeply nested example)
 
-  = tmpl_add_link 'Add Collar', :collar
-  = tmpl :collar
+# app/views/book/_form.html.erb
+<%= form_for(@book) do |f| %>
+  <div class="field">
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </div>
+
+  <% tmpl_build :chapter, key: 'chapters_attributes' do %>
+    <%= f.fields_for :chapters, Chapter.new do |chapter_fields| %>
+      <%= render 'chapter', chapter_fields: chapter_fields, index: 0 %>
+    <% end %>
+  <% end %>
+
+  <%= tmpl_add_link "Add Chapter", :chapter, container: '.tmpl-container-chapter' %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+
+<%= tmpl :chapter %>
+<%= tmpl :heading %>
+
+# app/views/book/_chapter.html.erb
+<div class="tmpl">
+  <div class="field">
+    <%= chapter_fields.label :title %><br>
+    <%= chapter_fields.text_field :title %>
+  </div>
+  <%= chapter_fields.hidden_field :_destroy %>
+
+  <div class="tmpl-container-heading-<%= index %>">
+    <%= chapter_fields.fields_for :headings do |heading_fields| %>
+      <%= render 'heading', heading_fields: heading_fields %>
+    <% end %>
+  </div>
+
+  <% tmpl_build :heading, key: 'headings_attributes' do %>
+    <%= chapter_fields.fields_for :headings, Heading.new do |heading_fields| %>
+      <%= render 'heading', heading_fields: heading_fields %>
+    <% end %>
+  <% end %>
+
+  <%= tmpl_add_link 'Add Heading', :heading, container: ".tmpl-container-heading-#{index}" %>
+  <%= tmpl_remove_link 'Remove Chapter' %>
+</div>
+
+# app/views/book/_heading.html.erb
+<div class="tmpl">
+  <div class="field">
+    <%= heading_fields.label :text %><br>
+    <%= heading_fields.text_field :text %>
+  </div>
+  <%= heading_fields.hidden_field :_destroy %>
+
+  <%= tmpl_remove_link 'Remove Heading' %>
+</div>
 
 
 == REQUIREMENTS:
 
 * rails
+* jquery-rails
 
 == INSTALL:
 
-* Add to Gemfile: gem 'tmpl'
-* bundle
-* Add to JS asset manifest: require tmpl
+* Add to Gemfile:
+  gem 'tmpl'
+
+* Run:
+  bundle
+
+* Add to application.js  manifest:
+  //= require tmpl
 
 == DEVELOPERS:
 
