@@ -1,6 +1,6 @@
 = tmpl
 
-* https://github.com/nearapogee/tmpl (url)
+* https://github.com/nearapogee/tmpl
 * https://github.com/nearapogee/tmpl-example-app
 
 == DESCRIPTION:
