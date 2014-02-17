@@ -16,15 +16,31 @@ An agnostic approach to handle dynamic forms in rails.
 * Low coupling.
 * No magic.
 
+There are no know problems. This is currently a pre-release. The following are
+anticipated changes:
+
+* The class names starting tmpl-container will become tmpl-ctn.
+* The tmpl-remove class will become tmpl-rm (non user facing).
+* JS will be refactored, for better naming.
+* Support for <label for=""> renaming attributes to match field ids. (Soon!)
+
 == SYNOPSIS:
 
-(abbreviated deeply nested example)
+(abbreviated deeply nested example - taken from tmpl-example-app)
 
 # app/views/book/_form.html.erb
 <%= form_for(@book) do |f| %>
   <div class="field">
     <%= f.label :name %><br>
     <%= f.text_field :name %>
+  </div>
+
+  <div class="tmpl-container-chapter">
+    <% f.object.chapters.each.with_index do |chapter, index| %>
+      <%= f.fields_for :chapters, chapter do |chapter_fields| %>
+        <%= render 'chapter', chapter_fields: chapter_fields, index: index %>
+      <% end %>
+    <% end %>
   </div>
 
   <% tmpl_build :chapter, key: 'chapters_attributes' do %>
@@ -78,6 +94,10 @@ An agnostic approach to handle dynamic forms in rails.
   <%= tmpl_remove_link 'Remove Heading' %>
 </div>
 
+== WHY:
+
+Seems like every app needs something like this. This methodology has been
+adapted over countless projects until it was time to be extracted.
 
 == REQUIREMENTS:
 
@@ -94,15 +114,6 @@ An agnostic approach to handle dynamic forms in rails.
 
 * Add to application.js  manifest:
   //= require tmpl
-
-== DEVELOPERS:
-
-After checking out the source, run:
-
-  $ rake newb
-
-This task will install any missing dependencies, run the tests/specs,
-and generate the RDoc.
 
 == LICENSE:
 
